@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Full Width, Half Height Canvas</title>
+  <style>
+    /* Reset default browser margins and padding */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%; /* Ensures that 100vh is measured accurately */
+    }
+
+    /* Style for the canvas */
+    #myCanvas {
+      display: block;       /* Removes extra whitespace below canvas in some browsers */
+      width: 100vw;         /* Full viewport width */
+      height: 100vh;         /* 90% viewport height */
+      background-color: #f0f0f0; /* Light gray background for visibility */
+    }
+  </style>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+
+  <script>
+    // Grab canvas and set up 2D context
+    const canvas = document.getElementById('myCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Adjust the actual pixel size of the canvas to match CSS dimensions
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight / 2;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Number of dots to simulate
+    const DOT_COUNT = 40;
+    
+    // Radius of each circle (4px diameter -> radius = 2px)
+    const RADIUS = 2;
+    
+    // Array to store all dot objects
+    let dots = [];
+
+    // Distance thresholds
+    const DISTANCE_THRESHOLD_MAX = 80; // Only draw lines for distances < 80
+    // Colors for different distance ranges
+    const COLORS = {
+      VERY_CLOSE: '#FFFF00',  // bright yellow for < 40px
+      CLOSE: '#FFFF66',       // yellow for < 50px
+      MID_CLOSE: '#C0C080',   // yellow-gray for < 60px
+      MID: 'gray',            // gray for < 70px
+      FAR: 'darkgray'         // dark gray for < 80px
+    };
+
+
+    // ---------------------------------------------------------------------
+    // Hardcoded "WEB DEV" Coordinates
+    //
+    // Each letter is defined as a set of (x, y) points (relative to letter's
+    // top-left corner). We'll offset them to place them in one row.
+    //
+    // Note: The shapes are quite approximate. Adjust as needed for styling.
+    // ---------------------------------------------------------------------
+
+    // Simple utility: shift an array of points by (dx, dy)
+    function offsetPoints(points, dx, dy) {
+        return points.map(pt => ({ x: pt.x + dx, y: pt.y + dy }));
+      }
+  
+      // W shape (width ~ 30px, height ~ 30px)
+      const letterW = [
+        { x: 0,  y: 0 },   // top-left
+        { x: 0,  y: 30 },  // bottom-left
+        { x: 10, y: 15 },  // middle
+        { x: 20, y: 30 },  // bottom-right
+        { x: 20, y: 0 },   // top-right
+      ];
+  
+      // E shape (width ~ 20px, height ~ 30px)
+      const letterE = [
+        { x: 0,  y: 0 },   // top-left
+        { x: 0,  y: 30 },  // bottom-left
+        { x: 10, y: 0 },   // top bar
+        { x: 10, y: 15 },  // middle bar
+        { x: 10, y: 30 },  // bottom bar
+      ];
+  
+      // B shape (width ~ 20px, height ~ 30px)
+      const letterB = [
+        { x: 0,  y: 0 },   
+        { x: 0,  y: 30 },
+        { x: 10, y: 0 },
+        { x: 15, y: 7 },
+        { x: 10, y: 15 },
+        { x: 15, y: 22 },
+        { x: 10, y: 30 },
+      ];
+  
+      // Space: we’ll just skip ~15-20 pixels in x-direction
+      const letterSpace = [];  // No dots
+  
+      // D shape (width ~ 20px, height ~ 30px)
+      const letterD = [
+        { x: 0,  y: 0 },   
+        { x: 0,  y: 30 },
+        { x: 10, y: 0 },
+        { x: 15, y: 7 },
+        { x: 15, y: 23 },
+        { x: 10, y: 30 },
+      ];
+  
+      // V shape (width ~ 20px, height ~ 30px)
+      const letterV = [
+        { x: 0,  y: 0 },
+        { x: 10, y: 30 },
+        { x: 20, y: 0 },
+      ];
+  
+      // We'll define the text "WEB DEV" as an array of letter definitions,
+      // each with a width so we can space them horizontally.
+      const textDefinition = [
+        { points: letterW, width: 30 },
+        { points: letterE, width: 25 },
+        { points: letterB, width: 25 },
+        { points: letterSpace, width: 20 },
+        { points: letterD, width: 25 },
+        { points: letterE, width: 25 },
+        { points: letterV, width: 25 },
+      ];  
+
+      const scaleFactor = 2;
+
+      function scalePoints(points, factor) {
+        return points.map(pt => ({
+          x: pt.x * factor,
+          y: pt.y * factor
+        }));
+      }
+  
+      // Scale each letter's points and width by 2
+      textDefinition.forEach(letter => {
+        letter.points = scalePoints(letter.points, scaleFactor);
+        letter.width = letter.width * scaleFactor;
+      });
+
+      function createManualTextDots() {
+        // Calculate total width of the entire text
+        const totalWidth = textDefinition.reduce((sum, letter) => sum + letter.width + 70, 0);
+  
+        // We'll place the text row ~ vertically centered
+        const baseY = canvas.height / 2 - 15;   // shift up ~15 to center
+        // We'll place the text so that the left edge is ~ center - half of total width
+        let currentX = (canvas.width - totalWidth) / 2;
+  
+        const textDots = [];
+  
+        // For each letter, offset its points by the currentX, baseY
+        // then increment currentX by letter.width
+        textDefinition.forEach(letter => {
+          // Shift the letter's points
+          const shiftedPoints = offsetPoints(letter.points, currentX, baseY);
+  
+          // Create Dot objects (with zero velocity)
+          shiftedPoints.forEach(pt => {
+            textDots.push(new Dot(pt.x, pt.y, 0, 0));
+          });
+  
+          // Move currentX over for next letter
+          currentX += letter.width + 70;
+        });
+  
+        return textDots;
+      }
+    // Constructor for Dot objects
+    function Dot(x=null, y=null, vx=null, vy=null) {
+      // Initial random position
+      this.x = (x==null ? Math.random() * canvas.width : x);
+      this.y = (y==null ? Math.random() * canvas.height : y);
+      // Assign a random velocity: range -1 to +1
+      this.vx = (vx==null ? (Math.random() - 0.5) * 2 : vx);
+      this.vy = (vy==null ? (Math.random() - 0.5) * 2 : vy);
+    }
+
+    // Update position; wrap around edges
+    Dot.prototype.update = function() {
+      this.x += this.vx;
+      this.y += this.vy;
+
+      // Wrap horizontally
+      if (this.x < 0) {
+        this.x = canvas.width;
+      } else if (this.x > canvas.width) {
+        this.x = 0;
+      }
+
+      // Wrap vertically
+      if (this.y < 0) {
+        this.y = canvas.height;
+      } else if (this.y > canvas.height) {
+        this.y = 0;
+      }
+    };
+
+    // Calculate the distance between two dots
+    function distance(dotA, dotB) {
+        return Math.hypot(dotA.x - dotB.x, dotA.y - dotB.y);
+        }
+
+    // Render dot as a 4×4 circle
+    Dot.prototype.draw = function() {
+        ctx.fillStyle = 'yellow';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, RADIUS, 0, Math.PI * 2);
+        ctx.fill();
+      };
+  
+      // Create the initial set of dot objects
+      for (let i = 0; i < DOT_COUNT; i++) {
+        dots.push(new Dot());
+      }
+
+    // Determine line color based on distance
+    function getLineColor(dist) {
+        if (dist < 40) {
+          return COLORS.VERY_CLOSE; 
+        } else if (dist < 50) {
+          return COLORS.CLOSE;
+        } else if (dist < 60) {
+          return COLORS.MID_CLOSE;
+        } else if (dist < 70) {
+          return COLORS.MID;
+        } else {
+          return COLORS.FAR;
+        }
+      }
+
+  
+      // 2) Add the text-based dots to the main array
+      dots.push(...createManualTextDots());
+
+    // Animation loop
+    function animate() {
+      // Clear the previous frame with our purple color
+      ctx.fillStyle = '#190021';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Update and draw each dot
+      dots.forEach(dot => {
+        dot.update();
+        dot.draw();
+      });
+
+      // Draw lines between dots that are within DISTANCE_THRESHOLD_MAX
+      for (let i = 0; i < dots.length; i++) {
+        for (let j = i + 1; j < dots.length; j++) {
+          const dist = distance(dots[i], dots[j]);
+          if (dist < DISTANCE_THRESHOLD_MAX) {
+            ctx.strokeStyle = getLineColor(dist);
+            ctx.lineWidth = 1; // Keep lines thin
+            ctx.beginPath();
+            ctx.moveTo(dots[i].x, dots[i].y);
+            ctx.lineTo(dots[j].x, dots[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Request the next frame
+      requestAnimationFrame(animate);
+    }
+
+    // Start the animation
+    animate();
+  </script>
+</body>
+</html>
