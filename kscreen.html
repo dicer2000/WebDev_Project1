@@ -22,7 +22,6 @@
 </head>
 <body>
   <canvas id="myCanvas"></canvas>
-
   <script>
     // Grab canvas and set up 2D context
     const canvas = document.getElementById('myCanvas');
@@ -240,7 +239,8 @@
 
   
       // 2) Add the text-based dots to the main array
-      dots.push(...createManualTextDots());
+      // Removed - I didn't like it
+//      dots.push(...createManualTextDots());
 
     // Animation loop
     function animate() {
