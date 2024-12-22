@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <title>Web Dev Rocks</title>
+  <style>
+    /* Reset default browser margins and padding */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%; /* Ensures that 100vh is measured accurately */
+    }
+
+    /* Style for the canvas */
+    #myCanvas {
+      display: block;       /* Removes extra whitespace below canvas in some browsers */
+      width: 100vw;         /* Full viewport width */
+      height: 50vh;         /* 90% viewport height */
+      background-color: #f0f0f0; /* Light gray background for visibility */
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <h2 class="mt-4 mb-4">Welcome To CSCI 324</h2>
+</div>
+
+  <canvas id="myCanvas"></canvas>
+
+  <div class="container">
+  <h5 class="mt-4">Officially, this class' objectives are to:</h5>
+  <div class="card mt-4 mb-4" style="width: 38rem;">
+    <div class="card-body bg-light">
+      <p class="card-text ">
+        <blockquote class="blockquote mt-0">
+        Design and development of client and server-side web applications, using libraries, and technologies relevant as of the time of course offering. Coverage of scripting language concepts including closure, dynamic typing, and prototypes. The class is project-oriented, and students will complete a significant web application.
+        </blockquote>
+      <a target="_blank" class="btn btn-primary" data-bs-toggle="modal" 
+      data-bs-target="#imageModal">What I Think About That...</a>
+    </div>
+  </div>
+
+
+  <p>However, I think this is a little under-whelming of a plan, especially for a senior-level class.  Besides exploring the items outlined in the syllabus, we will be focusing on a few other items</p>
+  <ul>
+  <li>Web Services / Microservices architectures</li>
+  <li>Large-scale, multi-server, highly-available web services</li>
+  <li>Cross-platform web applications, including hybrid mobile apps</li>
+</ul>
+  <p>As the syllabus says, students will be expected to build projects as a major component of success.  Expect to work substantial hours on these projects.</p>
+
+<footer class="footer mt-auto py-3 bg-light">
+    <div class="container">
+      <span class="text-muted">©2024 Brett Huffman. All Rights Reserved.</span>
+    </div>
+  </footer>
+</div>
+
+<!-- Bootstrap Modal -->
+<div 
+  class="modal fade" 
+  id="imageModal" 
+  tabindex="-1" 
+  aria-labelledby="imageModalLabel" 
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <button 
+          type="button" 
+          class="btn-close" 
+          data-bs-dismiss="modal" 
+          aria-label="Close"
+        ></button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Your image -->
+        <img 
+          src="./img/yawn.png" 
+          class="img-fluid" 
+          alt=""
+        >
+      </div>
+      
+      <!-- Optional: Modal Footer -->
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-secondary" 
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+
+  <script src="./oscreen.js"></script>
+</body>
+</html>
