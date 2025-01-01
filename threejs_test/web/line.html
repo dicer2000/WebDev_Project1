@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Full Width, Half Height Canvas</title>
+  <style>
+    /* Reset default browser margins and padding */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%; /* Ensures that 100vh is measured accurately */
+    }
+  </style>
+</head>
+<body>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" src="./js/line.js"></script>
+</body>
+</html>

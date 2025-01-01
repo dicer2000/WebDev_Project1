@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Maui Life</title>
+  <style>
+    /* Reset default browser margins and padding */
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%; /* Ensures that 100vh is measured accurately */
+      background: linear-gradient(to top, #000, #005c99);
+    }
+    canvas {
+      display: block; /* Removes scrollbars in some browsers */
+    }
+  </style>
+</head>
+<body>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
